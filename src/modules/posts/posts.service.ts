@@ -77,8 +77,25 @@ export class PostsService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} post`;
+  async findOne(id: number) {
+    const res = await this.postsRepository.findOne({
+      where: { id: id },
+      relations: { user: true },
+      select: {
+        user: {
+          id: true,
+          name: true,
+          email: true,
+          createdAt: true,
+        }
+      }
+    });
+    if (!res) {
+      throw new HttpException('Post not found', HttpStatus.BAD_REQUEST);
+    }
+
+
+    return res;
   }
 
   update(id: number, updatePostDto: UpdatePostDto) {

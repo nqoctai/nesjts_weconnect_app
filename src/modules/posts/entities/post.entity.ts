@@ -1,5 +1,7 @@
+import { Comment } from "src/modules/comments/entities/comment.entity";
+import { Like } from "src/modules/likes/entities/like.entity";
 import { User } from "src/modules/users/entities/user.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity({ name: 'posts' })
 export class Post {
@@ -31,7 +33,11 @@ export class Post {
     user: User;
 
 
-    // likes;
+    @OneToMany(() => Like, (like) => like.post)
+    likes: Like[];
+
+    @OneToMany(() => Comment, (comment) => comment.post)
+    comments: Comment[];
 
 
     // comments;

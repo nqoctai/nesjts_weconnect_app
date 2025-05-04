@@ -1,4 +1,7 @@
-import { Exclude } from "class-transformer";
+
+import { Comment } from "src/modules/comments/entities/comment.entity";
+import { Friend } from "src/modules/friends/entities/friend.entity";
+import { Like } from "src/modules/likes/entities/like.entity";
 import { Post } from "src/modules/posts/entities/post.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
@@ -42,5 +45,19 @@ export class User {
 
     @OneToMany(() => Post, (post) => post.user)
     posts: Post[];
+
+    @OneToMany(() => Like, (like) => like.user)
+    likes: Like[]
+
+    @OneToMany(() => Comment, (comment) => comment.user)
+    comments: Comment[];
+
+    @OneToMany(() => Friend, (friend) => friend.sender)
+    friendRequestsSent: Friend[];
+
+    @OneToMany(() => Friend, (friend) => friend.receiver)
+    friendRequestsReceived: Friend[];
+
+
 
 }

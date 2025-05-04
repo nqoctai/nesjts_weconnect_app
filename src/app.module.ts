@@ -9,6 +9,10 @@ import { User } from 'src/modules/users/entities/user.entity';
 import { PostsModule } from './modules/posts/posts.module';
 import { Post } from 'src/modules/posts/entities/post.entity';
 import { FilesModule } from './modules/files/files.module';
+import { LikesModule } from './modules/likes/likes.module';
+import { CommentsModule } from './modules/comments/comments.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { FriendsModule } from './modules/friends/friends.module';
 
 @Module({
   imports: [AuthModule, UsersModule,
@@ -31,6 +35,10 @@ import { FilesModule } from './modules/files/files.module';
     }),
     PostsModule,
     FilesModule,
+    LikesModule,
+    CommentsModule,
+    NotificationsModule,
+    FriendsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
