@@ -2,6 +2,7 @@
 import { Comment } from "src/modules/comments/entities/comment.entity";
 import { Friend } from "src/modules/friends/entities/friend.entity";
 import { Like } from "src/modules/likes/entities/like.entity";
+import { Notification } from "src/modules/notifications/entities/notification.entity";
 import { Post } from "src/modules/posts/entities/post.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
@@ -23,23 +24,23 @@ export class User {
     address: string;
     @Column({ nullable: true })
     avatar: string;
-    @Column({ nullable: true })
+    @Column({ nullable: true, name: 'is_active' })
     isActive: boolean;
-    @Column({ nullable: true })
+    @Column({ nullable: true, name: 'code_id' })
     codeId: string;
-    @Column({ nullable: true })
+    @Column({ nullable: true, name: 'code_expired' })
     codeExpired: string;
 
-    @CreateDateColumn()
+    @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
     createdAt: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({ type: 'timestamp', name: 'updated_at' })
     updatedAt: Date;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, name: 'created_by' })
     createdBy: string;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, name: 'updated_by' })
     updatedBy: string;
 
 
@@ -57,6 +58,10 @@ export class User {
 
     @OneToMany(() => Friend, (friend) => friend.receiver)
     friendRequestsReceived: Friend[];
+
+
+    @OneToMany(() => Notification, (notification) => notification.user)
+    notifications: Notification[];
 
 
 

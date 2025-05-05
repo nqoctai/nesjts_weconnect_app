@@ -13,6 +13,10 @@ import { LikesModule } from './modules/likes/likes.module';
 import { CommentsModule } from './modules/comments/comments.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { FriendsModule } from './modules/friends/friends.module';
+import { Like } from 'src/modules/likes/entities/like.entity';
+import { Comment } from 'src/modules/comments/entities/comment.entity';
+import { Notification } from 'src/modules/notifications/entities/notification.entity';
+import { Friend } from 'src/modules/friends/entities/friend.entity';
 
 @Module({
   imports: [AuthModule, UsersModule,
@@ -28,7 +32,7 @@ import { FriendsModule } from './modules/friends/friends.module';
         username: configService.get('DATABASE_USERNAME') || "root",
         password: configService.get('DATABASE_PASSWORD') || "123456",
         database: configService.get('DATABASE_NAME'),
-        entities: [User, Post],
+        entities: [User, Post, Like, Comment, Notification, Friend],
         synchronize: true,
       }),
       inject: [ConfigService],

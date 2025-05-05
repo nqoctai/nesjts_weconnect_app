@@ -1,0 +1,7 @@
+export enum NotificationType {
+    FRIEND_REQUEST,
+    FRIEND_REQUEST_ACCEPTED,
+    POST_LIKED,
+    POST_COMMENTED,
+    MESSAGE_RECEIVED
+}

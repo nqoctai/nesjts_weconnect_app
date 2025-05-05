@@ -20,15 +20,15 @@ export class Comment {
     @JoinColumn({ name: 'post_id' })
     post: Post;
 
-    @CreateDateColumn({ type: 'timestamp' })
+    @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
     createdAt: Date;
 
-    @UpdateDateColumn({ type: 'timestamp' })
+    @UpdateDateColumn({ type: 'timestamp', name: 'updated_at' })
     updatedAt: Date;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, name: 'created_by' })
     createdBy: string;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, name: 'updated_by' })
     updatedBy: string;
 }

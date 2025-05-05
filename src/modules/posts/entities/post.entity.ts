@@ -1,5 +1,6 @@
 import { Comment } from "src/modules/comments/entities/comment.entity";
 import { Like } from "src/modules/likes/entities/like.entity";
+import { Notification } from "src/modules/notifications/entities/notification.entity";
 import { User } from "src/modules/users/entities/user.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
@@ -16,16 +17,16 @@ export class Post {
     image: string;
 
 
-    @CreateDateColumn({ type: 'timestamp' })
+    @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
     createdAt: Date;
 
-    @UpdateDateColumn({ type: 'timestamp' })
+    @UpdateDateColumn({ type: 'timestamp', name: 'updated_at' })
     updatedAt: Date;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, name: 'created_by' })
     createdBy: string;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, name: 'updated_by' })
     updatedBy: string;
 
     @ManyToOne(() => User, (user) => user.posts)
@@ -38,6 +39,9 @@ export class Post {
 
     @OneToMany(() => Comment, (comment) => comment.post)
     comments: Comment[];
+
+    @OneToMany(() => Notification, (notification) => notification.post)
+    notifications: Notification[];
 
 
     // comments;
