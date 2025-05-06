@@ -1,34 +1,23 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { LikesService } from './likes.service';
-import { CreateLikeDto } from './dto/create-like.dto';
-import { UpdateLikeDto } from './dto/update-like.dto';
+import { ResponseMessage, User } from 'src/decorator/customize';
+import { IUser } from 'src/modules/users/user.interface';
 
-@Controller('likes')
+@Controller()
 export class LikesController {
-  constructor(private readonly likesService: LikesService) {}
+  constructor(private readonly likesService: LikesService) { }
 
-  @Post()
-  create(@Body() createLikeDto: CreateLikeDto) {
-    return this.likesService.create(createLikeDto);
+  @Post("/posts/:postId/like")
+  @ResponseMessage("Like post successfully")
+  likePost(@Param('postId') postId: string, @User() user: IUser) {
+    return this.likesService.likePost(postId, user);
   }
 
-  @Get()
-  findAll() {
-    return this.likesService.findAll();
+  @Delete("/posts/:postId/unlike")
+  @ResponseMessage("Unlike post successfully")
+  unlikePost(@Param('postId') postId: string, @User() user: IUser) {
+    return this.likesService.unlikePost(postId, user);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.likesService.findOne(+id);
-  }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLikeDto: UpdateLikeDto) {
-    return this.likesService.update(+id, updateLikeDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.likesService.remove(+id);
-  }
 }

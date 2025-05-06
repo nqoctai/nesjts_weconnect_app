@@ -48,6 +48,11 @@ export class UsersService {
         },
         take: Number(size) || 10,
         skip: skip || 0,
+        relations: {
+          friendRequestsSent: true,
+          friendRequestsReceived: { receiver: true, sender: true },
+
+        },
         select: {
           id: true,
           name: true,
@@ -69,7 +74,7 @@ export class UsersService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} user`;
+    return this.usersRepository.findOneBy({ id });
   }
 
   async findOneByUserName(email: string): Promise<User | undefined> {

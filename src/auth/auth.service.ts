@@ -22,6 +22,7 @@ export class AuthService {
                 throw new Error('Password is incorrect');
             }
             const { password, ...result } = user;
+            console.log("result", result)
             return result;
         }
         return null;
@@ -37,6 +38,7 @@ export class AuthService {
     }
 
     async login(user: any, response: Response) {
+        console.log("user", user);
         const { id, name, email } = user;
         const payload = {
             sub: "token login",
@@ -56,7 +58,7 @@ export class AuthService {
         })
 
         return {
-            access_token: this.jwtService.sign(payload),
+            accessToken: this.jwtService.sign(payload),
             user: {
                 id,
                 name,
@@ -80,6 +82,7 @@ export class AuthService {
                 const payload = {
                     sub: "token refresh",
                     iss: "from server",
+                    id,
                     name,
                     email,
                 };

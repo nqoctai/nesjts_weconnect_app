@@ -1,3 +1,4 @@
+import { on } from "events";
 import { Comment } from "src/modules/comments/entities/comment.entity";
 import { Friend } from "src/modules/friends/entities/friend.entity";
 import { Like } from "src/modules/likes/entities/like.entity";
@@ -25,7 +26,7 @@ export class Notification {
     post: Post; // nullable
 
 
-    @OneToOne(() => Like, { nullable: true })
+    @OneToOne(() => Like, { nullable: true, onDelete: 'CASCADE' })
     @JoinColumn({ name: 'like_id' })
     like: Like; // nullable
 

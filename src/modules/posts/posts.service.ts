@@ -12,6 +12,7 @@ export class PostsService {
   constructor(@InjectRepository(Post) private readonly postsRepository: Repository<Post>, @InjectRepository(User) private readonly userRepository: Repository<User>) { }
 
   async create(createPostDto: CreatePostDto, user: IUser) {
+    console.log("user", user);
     const userDB = await this.userRepository.findOneBy({ id: +user.id });
     if (!userDB) {
       throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
@@ -21,20 +22,20 @@ export class PostsService {
       user: userDB,
       createdBy: user.email,
     });
-    const { id } = await this.postsRepository.save(post);
-    const result = await this.postsRepository.findOne({
-      where: { id: id },
-      relations: { user: true },
-      select: {
-        user: {
-          id: true,
-          name: true,
-          email: true,
-          createdAt: true,
-        }
-      }
-    });
-    return result;
+    // const { id } = await this.postsRepository.save(post);
+    // const result = await this.postsRepository.findOne({
+    //   where: { id: id },
+    //   relations: { user: true },
+    //   select: {
+    //     user: {
+    //       id: true,
+    //       name: true,
+    //       email: true,
+    //       createdAt: true,
+    //     }
+    //   }
+    // });
+    return await this.postsRepository.save(post);
   }
 
   async findAll(page: number, size: number, filter: string = "") {
@@ -49,7 +50,7 @@ export class PostsService {
         },
         take: Number(size) || 10,
         skip: skip || 0,
-        relations: { user: true },
+        relations: { user: true, likes: { user: true }, comments: true },
         select: {
           id: true,
           content: true,
@@ -60,8 +61,9 @@ export class PostsService {
             id: true,
             name: true,
             email: true,
-            createdAt: true,
-          }
+            createdAt: true
+
+          },
         }
       }
     )

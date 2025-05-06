@@ -1,34 +1,35 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Put } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
+import { User } from 'src/decorator/customize';
+import { IUser } from 'src/modules/users/user.interface';
 
 @Controller('notifications')
 export class NotificationsController {
-  constructor(private readonly notificationsService: NotificationsService) {}
+  constructor(private readonly notificationsService: NotificationsService) { }
 
-  @Post()
-  create(@Body() createNotificationDto: CreateNotificationDto) {
-    return this.notificationsService.create(createNotificationDto);
-  }
+
 
   @Get()
-  findAll() {
-    return this.notificationsService.findAll();
+  findAllPaginated(@Query('page') page: number, @Query('size') size: number, @User() user: IUser) {
+    return this.notificationsService.findAllPaginated(page, size, user);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.notificationsService.findOne(+id);
+  @Get('unread/count')
+  getCountUnread(@User() user: IUser) {
+    return this.notificationsService.countAllUnread(user);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateNotificationDto: UpdateNotificationDto) {
-    return this.notificationsService.update(+id, updateNotificationDto);
+  @Put(":id/read")
+  markAsRead(@Param('id') id: string, @User() user: IUser) {
+    return this.notificationsService.markAsRead(id, user);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.notificationsService.remove(+id);
+  @Put("read-all")
+  markAllAsRead() {
+    return this.notificationsService.markAllAsRead();
   }
+
+
 }

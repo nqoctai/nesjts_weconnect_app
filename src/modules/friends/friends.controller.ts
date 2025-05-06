@@ -1,34 +1,38 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
 import { FriendsService } from './friends.service';
 import { CreateFriendDto } from './dto/create-friend.dto';
 import { UpdateFriendDto } from './dto/update-friend.dto';
+import { User } from 'src/decorator/customize';
+import { IUser } from 'src/modules/users/user.interface';
 
 @Controller('friends')
 export class FriendsController {
-  constructor(private readonly friendsService: FriendsService) {}
+  constructor(private readonly friendsService: FriendsService) { }
 
-  @Post()
-  create(@Body() createFriendDto: CreateFriendDto) {
-    return this.friendsService.create(createFriendDto);
+  @Post('request')
+  sendRequest(@Body() createFriendDto: CreateFriendDto, @User() user: IUser) {
+    return this.friendsService.sendRequest(createFriendDto, user);
+  }
+
+  @Put('accept/:id')
+  acceptRequest(@Param('id') id: string, @User() user: IUser) {
+    return this.friendsService.acceptRequest(+id, user);
+  }
+
+  @Put('reject/:id')
+  rejectRequest(@Param('id') id: string, @User() user: IUser) {
+    return this.friendsService.rejectRequest(+id, user);
+  }
+
+  @Get('requests')
+  getRequests(@User() user: IUser) {
+    return this.friendsService.getReceivedFriendRequests(user);
   }
 
   @Get()
-  findAll() {
-    return this.friendsService.findAll();
+  getFriends(@User() user: IUser) {
+    return this.friendsService.getFriends(user);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.friendsService.findOne(+id);
-  }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFriendDto: UpdateFriendDto) {
-    return this.friendsService.update(+id, updateFriendDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.friendsService.remove(+id);
-  }
 }
