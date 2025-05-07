@@ -14,7 +14,7 @@ export class FilesController {
   uploadFile(@UploadedFile() file: Express.Multer.File) {
     console.log("file", file);
     return {
-      fileName: file.originalname
+      fileName: file.filename
     }
   }
 }

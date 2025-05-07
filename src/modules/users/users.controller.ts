@@ -2,7 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ResponseMessage } from 'src/decorator/customize';
+import { ResponseMessage, User } from 'src/decorator/customize';
+import { IUser } from 'src/modules/users/user.interface';
 
 @Controller('users')
 export class UsersController {
@@ -23,8 +24,8 @@ export class UsersController {
 
   @Get()
   @ResponseMessage('Get all users successfully')
-  findAll(@Query('page') page: string, @Query('size') size: string, @Query('filter') filter: string) {
-    return this.usersService.findAll(page, size, filter);
+  findAll(@Query('page') page: string, @Query('size') size: string, @Query('filter') filter: string, @User() user: IUser) {
+    return this.usersService.findAll(page, size, filter, user);
   }
 
   @Get(':id')

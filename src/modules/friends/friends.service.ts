@@ -112,9 +112,7 @@ export class FriendsService {
 
     const friendRequest = await this.friendRepository.findOne({
       where: {
-        id: friendRequestId,
-        receiver: currentUser,
-        status: FriendStatus.PENDING
+        id: friendRequestId
       },
       relations: ['sender', 'receiver']
     })
@@ -160,9 +158,7 @@ export class FriendsService {
 
     const friendRequest = await this.friendRepository.findOne({
       where: {
-        id: friendRequestId,
-        receiver: currentUser,
-        status: FriendStatus.PENDING
+        id: friendRequestId
       },
       relations: ['sender', 'receiver']
     })
@@ -171,47 +167,51 @@ export class FriendsService {
       throw new HttpException('Friend request not found', HttpStatus.BAD_REQUEST);
     }
 
-    friendRequest.status = FriendStatus.REJECTED;
-    const friendDB = await this.friendRepository.save(friendRequest);
+    // friendRequest.status = FriendStatus.REJECTED;
+    // const friendDB = await this.friendRepository.save(friendRequest);
 
-    const friendResponse = {
-      id: friendDB.id,
-      sender: {
-        id: friendDB.sender.id,
-        name: friendDB.sender.name,
-        email: friendDB.sender.email,
-        phone: friendDB.sender.phone,
-        avatar: friendDB.sender.avatar,
-      },
-      receiver: {
-        id: friendDB.receiver.id,
-        name: friendDB.receiver.name,
-        email: friendDB.receiver.email,
-        phone: friendDB.receiver.phone,
-        avatar: friendDB.receiver.avatar,
-      },
-      status: friendDB.status,
-      createdAt: friendDB.createdAt,
-      updatedAt: friendDB.updatedAt,
-    }
+    // const friendResponse = {
+    //   id: friendDB.id,
+    //   sender: {
+    //     id: friendDB.sender.id,
+    //     name: friendDB.sender.name,
+    //     email: friendDB.sender.email,
+    //     phone: friendDB.sender.phone,
+    //     avatar: friendDB.sender.avatar,
+    //   },
+    //   receiver: {
+    //     id: friendDB.receiver.id,
+    //     name: friendDB.receiver.name,
+    //     email: friendDB.receiver.email,
+    //     phone: friendDB.receiver.phone,
+    //     avatar: friendDB.receiver.avatar,
+    //   },
+    //   status: friendDB.status,
+    //   createdAt: friendDB.createdAt,
+    //   updatedAt: friendDB.updatedAt,
+    // }
 
-    return friendResponse;
+    return await this.friendRepository.remove(friendRequest);
   }
 
   async getReceivedFriendRequests(user: IUser) {
-    const { email } = user;
+    const { email, id } = user;
     const currentUser = await this.userService.findOneByUserName(email);
+    console.log("currentUser", currentUser)
     if (!currentUser) {
       throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
     }
 
+    console.log("PENDING", FriendStatus.PENDING)
+
     const friendRequests = await this.friendRepository.find({
       where: {
-        receiver: currentUser,
+        receiver: { id: +id },
         status: FriendStatus.PENDING
       },
       relations: ['sender', 'receiver']
     })
+    console.log("friendRequests", friendRequests)
 
     return friendRequests.map(friendRequest => {
       return {

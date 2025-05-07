@@ -2,9 +2,11 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { Like, Not, Repository } from 'typeorm';
 import { User } from 'src/modules/users/entities/user.entity';
 import { hashPassword } from 'src/utils/brypt';
+import { FriendStatus } from 'src/modules/friends/friends.status.enum';
+import { IUser } from 'src/modules/users/user.interface';
 
 
 @Injectable()
@@ -37,7 +39,7 @@ export class UsersService {
 
   }
 
-  async findAll(page: string, size: string, filter: string = "") {
+  async findAll(page: string, size: string, filter: string = "", myUser: IUser) {
 
     const skip = (Number(page) - 1) * Number(size);
 
@@ -45,11 +47,12 @@ export class UsersService {
       {
         where: {
           name: Like(`%${filter}%`),
+          id: Not(+myUser.id),
         },
         take: Number(size) || 10,
         skip: skip || 0,
         relations: {
-          friendRequestsSent: true,
+          friendRequestsSent: { receiver: true, sender: true },
           friendRequestsReceived: { receiver: true, sender: true },
 
         },
@@ -62,6 +65,50 @@ export class UsersService {
       }
     );
 
+    const friendRequestsSent = res.map((user) => {
+      let isFriend = false;
+      let requestSent = false;
+      let requestReceived = false;
+      let friendsId: number | null = null;
+
+      const friendRequestSent = user.friendRequestsSent.find((friend) => friend.receiver.id === +myUser.id);
+      const friendRequestReceived = user.friendRequestsReceived.find((friend) => friend.sender.id === +myUser.id);
+      if (friendRequestSent) {
+        requestReceived = true;
+        friendsId = friendRequestSent.id;
+      }
+      if (friendRequestReceived) {
+        requestSent = true;
+        friendsId = friendRequestReceived.id;
+      }
+      let friend = user.friendRequestsSent.find((friend) => (friend?.receiver.id === +myUser.id || friend?.sender.id === +myUser.id) && friend.status === FriendStatus.ACCEPTED);
+
+      if (friend) {
+        if (friend.sender.id !== +myUser.id) {
+          isFriend = true;
+          friendsId = friend.id;
+          requestReceived = false;
+          requestSent = false;
+        }
+      } else {
+        friend = user.friendRequestsReceived.find((friend) => (friend?.receiver.id === +myUser.id || friend?.sender.id === +myUser.id) && friend.status === FriendStatus.ACCEPTED);
+        if (friend) {
+          isFriend = true;
+          friendsId = friend.id;
+          requestReceived = false;
+          requestSent = false;
+        }
+      }
+      return {
+        ...user,
+        isFriend: isFriend,
+        requestSent: requestSent,
+        requestReceived: requestReceived,
+        friendsId: friendsId,
+      }
+    }
+    );
+
     return {
       meta: {
         page: Number(page),
@@ -69,7 +116,7 @@ export class UsersService {
         pages: Math.ceil(total / Number(size)),
         total: total,
       },
-      result: [...res]
+      result: [...friendRequestsSent]
     }
   }
 

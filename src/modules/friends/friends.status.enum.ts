@@ -1,5 +1,5 @@
 export enum FriendStatus {
-    PENDING,
-    ACCEPTED,
-    REJECTED,
+    PENDING = "PENDING",
+    ACCEPTED = "ACCEPTED",
+    REJECTED = "REJECTED",
 }
