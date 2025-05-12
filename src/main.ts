@@ -6,6 +6,8 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import * as cookieParser from 'cookie-parser';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -13,6 +15,8 @@ async function bootstrap() {
     { whitelist: true, transform: true, forbidNonWhitelisted: true }
   ));
   const reflector = app.get(Reflector);
+  // const jwtService = app.get(JwtService);
+  // const configService = app.get(ConfigService);
   app.useGlobalInterceptors(new TransformInterceptor(reflector));
   app.useGlobalGuards(new JwtAuthGuard(reflector));
 

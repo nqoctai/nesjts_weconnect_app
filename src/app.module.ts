@@ -17,6 +17,8 @@ import { Like } from 'src/modules/likes/entities/like.entity';
 import { Comment } from 'src/modules/comments/entities/comment.entity';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { Friend } from 'src/modules/friends/entities/friend.entity';
+import { EventGateway } from 'src/event.gateway';
+
 
 @Module({
   imports: [AuthModule, UsersModule,
@@ -45,6 +47,6 @@ import { Friend } from 'src/modules/friends/entities/friend.entity';
     FriendsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, EventGateway],
 })
 export class AppModule { }

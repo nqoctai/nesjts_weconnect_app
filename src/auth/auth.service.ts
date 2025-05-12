@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
@@ -136,6 +136,17 @@ export class AuthService {
             email: user.email,
             createdAt: user.createdAt,
         };
+    }
+
+    async handleVerifyToken(token) {
+        try {
+            const payload = await this.jwtService.verify(token, {
+                secret: this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET')
+            });
+            return payload;
+        } catch (error) {
+            throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED)
+        }
     }
 
 }
