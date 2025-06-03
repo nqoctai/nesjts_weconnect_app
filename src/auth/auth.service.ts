@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
@@ -19,7 +19,7 @@ export class AuthService {
 
             const isMatch = comparePassword(pass, user.password);
             if (!isMatch) {
-                throw new Error('Password is incorrect');
+                throw new UnauthorizedException('Password is incorrect');
             }
             const { password, ...result } = user;
             console.log("result", result)
@@ -59,6 +59,8 @@ export class AuthService {
 
         return {
             accessToken: this.jwtService.sign(payload),
+            refreshToken: refresh_token,
+            expiresIn: ms(this.configService.get<string>('JWT_ACCESS_EXPIRE') as ms.StringValue || '1d'),
             user: {
                 id,
                 name,
@@ -96,6 +98,52 @@ export class AuthService {
 
                 return {
                     access_token: this.jwtService.sign(payload),
+                    user: {
+                        id,
+                        name,
+                        email,
+                    }
+
+                };
+            } else {
+                throw new BadRequestException("Refresh Token không hợp lệ. Vui lòng login");
+            }
+        } catch (error) {
+
+            if (error.name === 'TokenExpiredError') {
+                throw new BadRequestException('Refresh token đã hết hạn');
+            } else {
+                throw new BadRequestException('Refresh token không hợp lệ');
+            }
+        }
+    }
+
+    processNewTokenNoCookie = async (refreshToken: string) => {
+        try {
+            const decodedToken = this.jwtService.verify(refreshToken, {
+                secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET')
+            })
+            const { email } = decodedToken as unknown as IUser;
+
+
+            let user = await this.usersService.findOneByUserName(email);
+            if (user) {
+                // update new refresh token
+                const { id, name, email } = user;
+                const payload = {
+                    sub: "token refresh",
+                    iss: "from server",
+                    id,
+                    name,
+                    email,
+                };
+
+                const refresh_token = this.createRefreshTOken(payload);
+
+                return {
+                    accessToken: this.jwtService.sign(payload),
+                    refreshToken: refresh_token,
+                    expiresIn: ms(this.configService.get<string>('JWT_ACCESS_EXPIRE') as ms.StringValue || '1d'),
                     user: {
                         id,
                         name,

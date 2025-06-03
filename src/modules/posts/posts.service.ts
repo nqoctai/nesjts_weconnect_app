@@ -50,7 +50,7 @@ export class PostsService {
         },
         take: Number(size) || 10,
         skip: skip || 0,
-        relations: { user: true, likes: { user: true }, comments: true },
+        relations: { user: true, likes: { user: true }, comments: { user: true } },
         select: {
           id: true,
           content: true,

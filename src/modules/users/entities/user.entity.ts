@@ -64,5 +64,12 @@ export class User {
     notifications: Notification[];
 
 
+    // @OneToMany(() => Messageroom, (messageroom) => messageroom.createdBy)
+    // messageRooms: Messageroom[];
+
+    // @OneToMany(() => Messageroommember, (messageroommember) => messageroommember.user)
+    // messageRoomMembers: Messageroommember[];
+
+
 
 }

@@ -18,6 +18,7 @@ import { Comment } from 'src/modules/comments/entities/comment.entity';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { Friend } from 'src/modules/friends/entities/friend.entity';
 import { EventGateway } from 'src/event.gateway';
+import { MessageRoomMemberModule } from './modules/message.room.member/message.room.member.module';
 
 
 @Module({
@@ -45,6 +46,7 @@ import { EventGateway } from 'src/event.gateway';
     CommentsModule,
     NotificationsModule,
     FriendsModule,
+    MessageRoomMemberModule,
   ],
   controllers: [AppController],
   providers: [AppService, EventGateway],

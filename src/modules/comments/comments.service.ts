@@ -35,6 +35,7 @@ export class CommentsService {
     comment.content = content;
     comment.user = userDB;
     comment.post = postDB;
+    comment.createdBy = userDB.email;
     comment = await this.likeRepository.save(comment);
 
     if (!(userDB.id === postDB.user.id)) {

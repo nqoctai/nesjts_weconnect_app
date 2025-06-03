@@ -29,7 +29,7 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     }
 
     async handleConnection(socket: Socket) {
-        console.log(socket.id)
+        // console.log(socket?.id)
         const token = socket.handshake.auth.token;
         console.log("token", token)
         if (token) {
@@ -61,17 +61,21 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     }
 
     handleDisconnect(socket: Socket): any {
-        console.log(socket.id, socket.data?.email)
-        const userId = socket.data?.user.id;
-        if (userId && this.users[userId]) {
-            delete this.users[userId];
-            console.log("user", this.users)
+        console.log(socket.id, socket.data?.email);
+
+        // Add proper null check before accessing user.id
+        if (socket.data?.user) {
+            const userId = socket.data.user.id;
+            if (userId && this.users[userId]) {
+                delete this.users[userId];
+                console.log("user", this.users);
+            }
+        } else {
+            // Handle case where socket.data.user is undefined
+            console.log("User disconnected without authentication");
         }
-        console.log("Disconnect")
-        // Xóa socketId của người dùng khỏi danh sách
 
-
-
+        console.log("Disconnect");
     }
 
     @SubscribeMessage('friendRequestSent')
@@ -88,7 +92,7 @@ export class EventGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 from: socket.data.user.id, // hoặc socket.data.email
                 fullName: socket.data.user.name
             });
-            console.log("Đã gia nhập kênh")
+
         }
 
     }

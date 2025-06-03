@@ -37,6 +37,18 @@ export class AuthController {
     return this.authService.processNewToken(refreshToken, response);
   }
 
+  @Post('/refresh-no-cookie')
+  @Public()
+  @ResponseMessage("Get User by refresh token")
+  handleRefreshTokenNoCookie(@Req() req: Request, @Body() body: { refresh_token: string }) {
+    const refreshToken = body.refresh_token;
+    if (!refreshToken) {
+      // Cookie không còn => coi như refresh_token hết hạn
+      throw new BadRequestException('Refresh token đã hết hạn hoặc không tồn tại');
+    }
+    return this.authService.processNewTokenNoCookie(refreshToken);
+  }
+
 
   @Post('/logout')
   @ResponseMessage("Logout successfully")
